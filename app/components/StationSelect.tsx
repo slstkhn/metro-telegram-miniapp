@@ -1,7 +1,7 @@
 'use client';
 import { Autocomplete, TextField } from '@mui/material';
 import { useEffect, useState } from 'react';
-import stationsData from '../../../data/metro.json';
+import stationsData from '../../data/metro.json';
 
 interface Props {
   label: string;
