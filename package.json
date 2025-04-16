@@ -15,7 +15,8 @@
     "@emotion/react": "latest",
     "@emotion/styled": "latest",
     "@mui/icons-material": "latest",
-    "tma.js": "latest",
+    "@tma.js/sdk": "2.7.0",
+"@tma.js/sdk-react": "2.7.0",
     "typescript": "latest"
   }
 }
