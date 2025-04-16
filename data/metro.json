@@ -1,0 +1,48 @@
+{
+  "stations": [
+    {
+      "id": "oz",
+      "name": "Озерки",
+      "line": "2"
+    },
+    {
+      "id": "ud",
+      "name": "Удельная",
+      "line": "2"
+    },
+    {
+      "id": "pi",
+      "name": "Пионерская",
+      "line": "2"
+    }
+  ],
+  "edges": [
+    {
+      "from": "oz",
+      "to": "ud",
+      "minutes": 3
+    },
+    {
+      "from": "ud",
+      "to": "pi",
+      "minutes": 3
+    }
+  ],
+  "wagons": [
+    {
+      "station": "oz",
+      "direction": "Купчино",
+      "best_car": "первый вагон"
+    },
+    {
+      "station": "ud",
+      "direction": "Купчино",
+      "best_car": "первый вагон"
+    },
+    {
+      "station": "pi",
+      "direction": "Купчино",
+      "best_car": "первый вагон"
+    }
+  ]
+}
