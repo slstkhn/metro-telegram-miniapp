@@ -17,4 +17,7 @@
     "@mui/icons-material": "latest",
     "typescript": "latest"
   }
+  "devDependencies": {
+  "@types/node": "latest"
+}
 }
