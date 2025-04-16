@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import data from '../../../data/metro.json';
-import { dijkstra } from '../../../../lib/dijkstra';
+import { dijkstra } from '../../../lib/dijkstra';
 
 export async function POST(request: NextRequest) {
   const { from, to } = await request.json();
