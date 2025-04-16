@@ -1,25 +1,16 @@
-import { CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import ThemeRegistry from './ThemeRegistry';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Маршрутизатор метро',
-  description: 'Мини‑приложение Telegram для расчёта маршрутов метро',
+  description: 'Мини‑приложение Telegram для расчёта маршрутов метро'
 };
 
-const theme = createTheme({ palette: { mode: 'light' } });
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ru">
       <body>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
+        <ThemeRegistry>{children}</ThemeRegistry>
       </body>
     </html>
   );
