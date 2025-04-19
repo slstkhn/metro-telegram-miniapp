@@ -1,1 +1,31 @@
-ts\nimport { NextRequest, NextResponse } from 'next/server';\nimport { Telegraf } from 'telegraf';\n\n// Токен лежит в переменной окружения\nconst BOT_TOKEN = process.env.BOT_TOKEN as string;\n\n// Создаём (или берём из кеша — важно на Vercel) экземпляр бота\nconst bot = new Telegraf(BOT_TOKEN);\n\nbot.start((ctx) =>\n ctx.reply(\n 'Привет! Я помогу построить быстрый маршрут в метро. '\\\n + 'Нажмите кнопку «Открыть» ниже, чтобы запустить мини‑приложение.',\n ),\n);\n\n// Нужен один запуск middleware — сделаем лениво\nlet inited = false;\nfunction init() {\n if (!inited) {\n bot.handleUpdate = bot.handleUpdate.bind(bot);\n inited = true;\n }\n}\n\nexport async function POST(req: NextRequest) {\n init();\n const update = await req.json();\n await bot.handleUpdate(update);\n return NextResponse.json({ ok: true });\n}\n\n
+import { NextRequest, NextResponse } from 'next/server';
+import { Telegraf } from 'telegraf';
+
+const BOT_TOKEN = process.env.BOT_TOKEN as string;
+if (!BOT_TOKEN) throw new Error('BOT_TOKEN env not set');
+
+const bot = new Telegraf(BOT_TOKEN);
+
+// приветствие на /start
+bot.start((ctx) =>
+  ctx.reply(
+    'Привет! Я помогу построить быстрый маршрут в метро.\n' +
+    'Нажмите кнопку «Открыть» ниже, чтобы запустить мини‑приложение.'
+  )
+);
+
+// инициализируем Telegraf один раз (важно для serverless)
+let inited = false;
+function init() {
+  if (!inited) {
+    bot.webhookReply = false;        // отключаем автоматический reply
+    inited = true;
+  }
+}
+
+export async function POST(req: NextRequest) {
+  init();
+  const update = await req.json();
+  await bot.handleUpdate(update);
+  return NextResponse.json({ ok: true });
+}
