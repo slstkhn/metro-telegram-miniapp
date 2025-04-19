@@ -10,7 +10,19 @@ const bot = new Telegraf(BOT_TOKEN);
 bot.start((ctx) =>
   ctx.reply(
     'Привет! Я помогу построить быстрый маршрут в метро.\n' +
-    'Нажмите кнопку «Открыть» ниже, чтобы запустить мини‑приложение.'
+    'Нажмите кнопку «Открыть» ниже, чтобы запустить мини‑приложение.',
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: 'Открыть приложение',
+              web_app: { url: metro-telegram-miniapp-jibf.vercel.app }   // <- магия
+            }
+          ]
+        ]
+      }
+    }
   )
 );
 
