@@ -14,7 +14,7 @@
     "@mui/material": "latest",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
     "telegraf": "latest"
   },
   "devDependencies": {
