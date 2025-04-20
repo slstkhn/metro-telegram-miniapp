@@ -31,5 +31,5 @@ export async function POST(req: NextRequest) {
     segments.push({ from: sFrom.name, to: sTo.name, minutes, wagonsTip: wagon });
   }
 
-  return NextResponse.json({ total: dist, segments });
+  return NextResponse.json({ total: dist[to], segments });
 }
