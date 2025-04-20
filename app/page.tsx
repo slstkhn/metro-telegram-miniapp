@@ -1,6 +1,6 @@
 'use client';
 import { Box, Button, Typography } from '@mui/material';
-import StationSelect from './components/StationSelect';
+import { StationSelect } from './components/StationSelect';
 import { useState } from 'react';
 
 export default function Home() {
