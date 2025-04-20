@@ -1,27 +1,55 @@
 'use client';
-import { Autocomplete, TextField } from '@mui/material';
-import { useEffect, useState } from 'react';
-import stationsData from '../../data/metro.json';
 
-interface Props {
-  label: string;
-  onChange: (value: any) => void;
+import { Autocomplete, TextField } from '@mui/material'
+import { useEffect, useState } from 'react'
+
+/** Хук для загрузки списка станций из public/metro.json */
+function useStations() {
+  const [stations, setStations] = useState<{ id: string; name: string; line?: string }[]>([])
+  useEffect(() => {
+    fetch('/metro.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Failed to load metro.json')
+        return res.json()
+      })
+      .then(data => setStations(data.stations))
+      .catch(console.error)
+  }, [])
+  return stations
 }
 
-export default function StationSelect({ label, onChange }: Props) {
-  const [options, setOptions] = useState<any[]>([]);
+interface Station {
+  id: string
+  name: string
+  line?: string
+}
 
-  useEffect(() => {
-    setOptions((stationsData as any).stations);
-  }, []);
+interface Props {
+  label: string
+  value: Station | null
+  onChange: (val: Station | null) => void
+}
+
+/** Компонент выбора станции с автокомплитом */
+export function StationSelect({ label, value, onChange }: Props) {
+  const stations = useStations()
 
   return (
     <Autocomplete
       fullWidth
-      options={options}
-      getOptionLabel={(opt) => opt.name}
-      onChange={(e, val) => onChange(val)}
-      renderInput={(params) => <TextField {...params} label={label} margin="normal" />}
+      options={stations}
+      getOptionLabel={opt => opt.name}
+      value={value}
+      onChange={(_, val) => onChange(val)}
+      isOptionEqualToValue={(opt, val) => opt.id === val?.id}
+      renderInput={params => (
+        <TextField
+          {...params}
+          label={stations.length === 0 ? 'Загрузка...' : label}
+          variant="outlined"
+          margin="normal"
+        />
+      )}
     />
-  );
+  )
 }
