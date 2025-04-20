@@ -1,25 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import data from '../../../data/metro.json';
 import { dijkstra } from '../../../lib/dijkstra';
 
 export async function POST(req: NextRequest) {
   const { from, to } = await req.json();
+  if (!from || !to) {
+    return NextResponse.json({ error: 'from/to required' }, { status: 400 });
+  }
 
-  // --- ваш Dijkstra, например:
-  const { dist, path } = dijkstra(graph, from, to);
-
-  // Возвращаем ровно то, что ожидает фронт:
-  return NextResponse.json({
-    total: dist,      // <— здесь dist, а не dist[to] или что‑то ещё
-    segments: path,   // или ваш массив сегментов
-  });
-}
-
-
-  // Подхватываем свежий public/metro.json
-  const origin = req.nextUrl.origin;
-  const data = await fetch(`${origin}/metro.json`).then(res => res.json());
-
-  // Собираем граф
+  // 1) Строим граф
   const graph: Record<string, { to: string; minutes: number }[]> = {};
   (data.edges as any[]).forEach(e => {
     graph[e.from] = graph[e.from] || [];
@@ -28,19 +17,34 @@ export async function POST(req: NextRequest) {
     graph[e.to].push({ to: e.from, minutes: e.minutes });
   });
 
+  // 2) Запускаем Dijkstra
   const { dist, path } = dijkstra(graph, from, to);
 
-  const segments = [];
+  // 3) Собираем подробные сегменты
+  const segments: {
+    from: string;
+    to: string;
+    minutes: number;
+    wagonsTip: string;
+  }[] = [];
+
   for (let i = 0; i < path.length - 1; i++) {
-    const sFrom = data.stations.find((s:any) => s.id === path[i]);
-    const sTo   = data.stations.find((s:any) => s.id === path[i+1]);
-    const minutes = graph[path[i]].find(e => e.to === path[i+1])!.minutes;
-    const wagon = (data.wagons as any[]).find(w => w.station === path[i])?.best_car || '';
-    segments.push({ from: sFrom.name, to: sTo.name, minutes, wagonsTip: wagon });
+    const sFrom = data.stations.find(s => s.id === path[i])!;
+    const sTo   = data.stations.find(s => s.id === path[i + 1])!;
+    const minutes = graph[path[i]].find(x => x.to === path[i + 1])!.minutes;
+    const wagon = (data.wagons as any[])
+      .find(w => w.station === sFrom.id)?.best_car || '—';
+    segments.push({
+      from: sFrom.name,
+      to:   sTo.name,
+      minutes,
+      wagonsTip: wagon,
+    });
   }
 
+  // 4) Отдаём ровно то, что ждёт фронт:
   return NextResponse.json({
-  total: dist[to],   // именно время до конечной станции
-  segments
-})
+    total:    dist,      // <— число минут
+    segments,            // <— детализация маршрута
+  });
 }
