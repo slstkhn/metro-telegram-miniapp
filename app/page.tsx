@@ -18,7 +18,7 @@ export default function Home() {
     });
     const json = await res.json();
     setTime(json.total);
-    console.log('total minutes:', json.total, 'segments:', json.segments);
+    console.log('API ответ:', json);
   };
 
   return (
