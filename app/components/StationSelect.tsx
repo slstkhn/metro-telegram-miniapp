@@ -1,6 +1,20 @@
 'use client';
 
 import { Autocomplete, TextField } from '@mui/material'
+// Тип одного сегмента маршрута
+interface Segment {
+  from: string;
+  to: string;
+  minutes: number;
+  wagonsTip: string;
+}
+
+// Тип всего ответа от /api/route
+interface RouteResult {
+  total: number;
+  segments: Segment[];
+}
+
 import { useEffect, useState } from 'react'
 
 /** Хук для загрузки списка станций из public/metro.json */
