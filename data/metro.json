@@ -1059,5 +1059,55 @@
       "direction": "both",
       "best_car": "первый вагон"
     }
-  ]
+    "edges": [
+    // … ваши старые рёбра (между станциями одной линии) …
+
+    // ===== ПЕРЕСАДКИ =====
+    // Линии 1 ↔ 2 на Технологическом институте
+    {
+      "from": "tehnologicheskiy_institut1_1",
+      "to":   "tehnologicheskiy_institut2_2",
+      "minutes": 4
+    },
+    {
+      "from": "tehnologicheskiy_institut2_2",
+      "to":   "tehnologicheskiy_institut1_1",
+      "minutes": 4
+    },
+
+    // Линии 3 ↔ 4 на Площади Александра Невского
+    {
+      "from": "ploschad_aleksandra_nevskogo1_3",
+      "to":   "ploschad_aleksandra_nevskogo2_4",
+      "minutes": 4
+    },
+    {
+      "from": "ploschad_aleksandra_nevskogo2_4",
+      "to":   "ploschad_aleksandra_nevskogo1_3",
+      "minutes": 4
+    },
+
+    // «треугольник» линий 2–5–4: Сенная пл. ↔ Садовая ↔ Спасская
+    {
+      "from": "sennaya_ploschad_2",
+      "to":   "sadovaya_5",
+      "minutes": 3
+    },
+    {
+      "from": "sadovaya_5",
+      "to":   "sennaya_ploschad_2",
+      "minutes": 3
+    },
+    {
+      "from": "sadovaya_5",
+      "to":   "spasskaya_4",
+      "minutes": 3
+    },
+    {
+      "from": "spasskaya_4",
+      "to":   "sadovaya_5",
+      "minutes": 3
+    }
+  ],
+]
 }
