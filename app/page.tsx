@@ -29,23 +29,27 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   // Единственная декларация handleClick
-  const handleClick = async () => {
-    if (!from || !to) return;
-    setLoading(true);
-    try {
-      const res = await fetch('/api/route', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ from: from.id, to: to.id }),
-      });
-      const data: RouteResult = await res.json();
-      setRoute(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // 1) Убедитесь, что выше объявлен:
+//    const [time, setTime] = useState<number | null>(null);
+
+const handleClick = async () => {
+  if (!from || !to) return;
+
+  // 2) Ваш запрос к бэку
+  const res = await fetch('/api/route', {
+    method: 'POST',
+    body: JSON.stringify({ from: from.id, to: to.id }),
+  });
+
+  // 3) Парсим ответ
+  const json = await res.json();
+
+  // ← ВСТАВЬТЕ ЭТУ СТРОКУ ПОДСТРОЧНО:
+  setTime(json.total);
+
+  // (опционально) для отладки:
+  console.log('total minutes:', json.total, 'segments:', json.segments);
+};
 
   return (
     <Box p={2}>
