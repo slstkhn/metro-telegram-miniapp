@@ -1,60 +1,33 @@
 'use client';
-
 import { Box, Button, Typography } from '@mui/material';
 import { useState } from 'react';
-import { StationSelect, type Station } from './components/StationSelect';
-
-// Тип одного сегмента маршрута
-interface Segment {
-  from: string;
-  to: string;
-  minutes: number;
-  wagonsTip: string;
-}
-// Тип всего ответа от API
-interface RouteResult {
-  total: number;
-  segments: Segment[];
-}
+import { StationSelect, Station } from './components/StationSelect';
 
 export default function Home() {
-  // состояние для выбора «Откуда»
+  // 1. Состояния для селектов и времени
   const [from, setFrom] = useState<Station | null>(null);
-  // состояние для выбора «Куда»
-  const [to,   setTo]   = useState<Station | null>(null);
+  const [to, setTo] = useState<Station | null>(null);
+  const [time, setTime] = useState<number | null>(null);
 
-  // результат маршрута
-  const [route,   setRoute]   = useState<RouteResult | null>(null);
-  // индикатор загрузки
-  const [loading, setLoading] = useState(false);
-
-  // Единственная декларация handleClick
-  // 1) Убедитесь, что выше объявлен:
-//    const [time, setTime] = useState<number | null>(null);
-
-const handleClick = async () => {
-  if (!from || !to) return;
-
-  // 2) Ваш запрос к бэку
-  const res = await fetch('/api/route', {
-    method: 'POST',
-    body: JSON.stringify({ from: from.id, to: to.id }),
-  });
-
-  // 3) Парсим ответ
-  const json = await res.json();
-
-  // ← ВСТАВЬТЕ ЭТУ СТРОКУ ПОДСТРОЧНО:
-  setTime(json.total);
-
-  // (опционально) для отладки:
-  console.log('total minutes:', json.total, 'segments:', json.segments);
-};
+  // 2. handleClick с fetch и setTime
+  const handleClick = async () => {
+    if (!from || !to) return;
+    const res = await fetch('/api/route', {
+      method: 'POST',
+      body: JSON.stringify({ from: from.id, to: to.id }),
+    });
+    const json = await res.json();
+    setTime(json.total);
+    console.log('total minutes:', json.total, 'segments:', json.segments);
+  };
 
   return (
     <Box p={2}>
-      <Typography variant="h6" mb={2}>Маршрут метро</Typography>
+      <Typography variant="h6" mb={2}>
+        Маршрут метро
+      </Typography>
 
+      {/* 3. Передаём и value, и onChange */}
       <StationSelect
         label="Откуда"
         value={from}
@@ -71,23 +44,14 @@ const handleClick = async () => {
         fullWidth
         sx={{ mt: 2 }}
         onClick={handleClick}
-        disabled={!from || !to || loading}
       >
-        {loading ? 'Секундочку…' : 'Построить'}
+        Построить
       </Button>
 
-      {route && (
-        <Box mt={4}>
-          <Typography variant="subtitle1">
-            Время: {route.total} мин
-          </Typography>
-          {route.segments.map((seg, i) => (
-            <Typography key={i} variant="body2">
-              {seg.from} → {seg.to} ({seg.minutes} мин). Садитесь: {seg.wagonsTip}
-            </Typography>
-          ))}
-        </Box>
-      )}
+      {/* 4. Выводим время */}
+      <Typography sx={{ mt: 2 }}>
+        Время: {time !== null ? `${time} мин` : '—'}
+      </Typography>
     </Box>
   );
 }
