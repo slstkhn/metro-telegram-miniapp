@@ -1,6 +1,20 @@
 'use client';
 
 import { Box, Button, Typography } from '@mui/material';
+// Тип одного сегмента маршрута
+interface Segment {
+  from: string;
+  to: string;
+  minutes: number;
+  wagonsTip: string;
+}
+
+// Тип всего ответа от /api/route
+interface RouteResult {
+  total: number;
+  segments: Segment[];
+}
+
 import { useState } from 'react';
 import { StationSelect, type Station } from './components/StationSelect';
 
