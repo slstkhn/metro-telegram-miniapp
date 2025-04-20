@@ -18,11 +18,12 @@ function useStations() {
   return stations
 }
 
-interface Station {
+export interface Station {
   id: string
   name: string
   line?: string
 }
+
 
 interface Props {
   label: string
