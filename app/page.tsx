@@ -1,7 +1,9 @@
 'use client';
+
 import { Box, Button, Typography } from '@mui/material';
 import { useState } from 'react';
-import { StationSelect, Station } from './components/StationSelect';
+import { StationSelect } from './components/StationSelect';
+import type { Station } from './components/StationSelect';
 
 export default function Home() {
   // 1. Состояния для селектов и времени
@@ -9,17 +11,21 @@ export default function Home() {
   const [to, setTo] = useState<Station | null>(null);
   const [time, setTime] = useState<number | null>(null);
   const [segments, setSegments] = useState<
-  { from: string; to: string; minutes: number; wagonsTip: string }[]
+    { from: string; to: string; minutes: number; wagonsTip: string }[]
+  >([]);
 
-  // 2. handleClick с fetch и setTime
+  // 2. handleClick с fetch и setTime/ setSegments
   const handleClick = async () => {
-  if (!from || !to) return;
-  const res = await fetch(`/api/route?from=${from}&to=${to}`);
-  const json = await res.json();
-  setTime(json.total);
-  // ← сюда приходит массив сегментов с полем wagonsTip
-  setSegments(json.segments);
-};
+    if (!from || !to) return;
+    const res = await fetch(`/api/route?from=${from.id}&to=${to.id}`);
+    if (!res.ok) {
+      console.error('Ошибка при получении маршрута');
+      return;
+    }
+    const json = await res.json();
+    setTime(json.total);
+    setSegments(json.segments);
+  };
 
   return (
     <Box p={2}>
@@ -28,22 +34,15 @@ export default function Home() {
       </Typography>
 
       {/* 3. Передаём и value, и onChange */}
-      <StationSelect
-        label="Откуда"
-        value={from}
-        onChange={setFrom}
-      />
-      <StationSelect
-        label="Куда"
-        value={to}
-        onChange={setTo}
-      />
+      <StationSelect label="Откуда" value={from} onChange={setFrom} />
+      <StationSelect label="Куда"   value={to}   onChange={setTo}   />
 
       <Button
         variant="contained"
         fullWidth
         sx={{ mt: 2 }}
         onClick={handleClick}
+        disabled={!from || !to}  // не даём нажать без выбора
       >
         Построить
       </Button>
@@ -52,16 +51,17 @@ export default function Home() {
       <Typography sx={{ mt: 2 }}>
         Время: {time !== null ? `${time} мин` : '—'}
       </Typography>
+
+      {/* 5. Выводим список сегментов с подсказками по вагонам */}
       {segments.length > 0 && (
-  <Box sx={{ mt: 2 }}>
-    {segments.map((seg, i) => (
-      <Typography key={i} variant="body2">
-        {seg.from} → {seg.to}: {seg.minutes} мин;  
-        🡆 вагон: «{seg.wagonsTip}»
-      </Typography>
-    ))}
-  </Box>
-)}
+        <Box sx={{ mt: 2 }}>
+          {segments.map((seg, i) => (
+            <Typography key={i} variant="body2">
+              {seg.from} → {seg.to}: {seg.minutes} мин; 🡆 вагон: «{seg.wagonsTip}»
+            </Typography>
+          ))}
+        </Box>
+      )}
     </Box>
   );
 }
