@@ -8,18 +8,18 @@ export default function Home() {
   const [from, setFrom] = useState<Station | null>(null);
   const [to, setTo] = useState<Station | null>(null);
   const [time, setTime] = useState<number | null>(null);
+  const [segments, setSegments] = useState<
+  { from: string; to: string; minutes: number; wagonsTip: string }[]
 
   // 2. handleClick с fetch и setTime
   const handleClick = async () => {
-    if (!from || !to) return;
-    const res = await fetch('/api/route', {
-      method: 'POST',
-      body: JSON.stringify({ from: from.id, to: to.id }),
-    });
-    const json = await res.json();
-    setTime(json.total);
-    console.log('API ответ:', json);
-  };
+  if (!from || !to) return;
+  const res = await fetch(`/api/route?from=${from}&to=${to}`);
+  const json = await res.json();
+  setTime(json.total);
+  // ← сюда приходит массив сегментов с полем wagonsTip
+  setSegments(json.segments);
+};
 
   return (
     <Box p={2}>
@@ -52,6 +52,16 @@ export default function Home() {
       <Typography sx={{ mt: 2 }}>
         Время: {time !== null ? `${time} мин` : '—'}
       </Typography>
+      {segments.length > 0 && (
+  <Box sx={{ mt: 2 }}>
+    {segments.map((seg, i) => (
+      <Typography key={i} variant="body2">
+        {seg.from} → {seg.to}: {seg.minutes} мин;  
+        🡆 вагон: «{seg.wagonsTip}»
+      </Typography>
+    ))}
+  </Box>
+)}
     </Box>
   );
 }
